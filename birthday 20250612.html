@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お誕生日おめでとう！</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Kiwi+Maru:wght@500&family=Mochiy+Pop+One&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.min.js"></script>
+    <style>
+        body {
+            font-family: 'Kiwi Maru', serif;
+            overflow: hidden;
+        }
+        .hacker-font {
+            font-family: 'DotGothic16', sans-serif;
+        }
+        .pop-font {
+            font-family: 'Mochiy Pop One', sans-serif;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0.7;
+            animation: confetti-fall 7s linear infinite;
+        }
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+            }
+            100% {
+                transform: translateY(110vh) rotate(720deg);
+            }
+        }
+        .fade-in {
+            animation: fadeInAnimation 2s ease-in forwards;
+        }
+        @keyframes fadeInAnimation {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+
+    <div id="start-screen" class="text-center p-8">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">誕生日おめでとう！</h1>
+        <p class="text-lg text-gray-600 mb-8">君のために特別なプレゼントを用意したよ！</p>
+        <button id="present-button" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-4 px-8 rounded-full shadow-lg transform transition-transform duration-300 hover:scale-110">
+            プレゼントを開く
+        </button>
+    </div>
+
+    <div id="error-screen" class="hidden h-screen w-screen bg-black text-green-500 hacker-font p-4 text-sm overflow-hidden">
+        <p>A problem has been detected and your system has been shut down to prevent damage.</p>
+        <p class="mt-4">BIRTHDAY_CELEBRATION_PROTOCOL_FAILURE</p>
+        <p class="mt-4">If this is the first time you've seen this stop error screen,
+        restart your computer. If this screen appears again, follow
+        these steps:</p>
+        <p class="mt-2">Check to make sure any new hardware or software is properly installed.
+        If this is a new installation, ask your hardware or software manufacturer
+        for any updates you might need.</p>
+        <p class="mt-4">Technical information:</p>
+        <p>*** STOP: 0x000000FE (0x00000008, 0x00000006, 0x00000009, 0x84244ff0)</p>
+        <div class="absolute bottom-4 left-4 text-white">
+            <p>システムファイルをスキャン中...</p>
+            <div class="w-full bg-gray-700 rounded-full h-2.5 mt-2">
+                <div id="progress-bar" class="bg-red-600 h-2.5 rounded-full" style="width: 0%"></div>
+            </div>
+            <p id="progress-text" class="mt-1">0%</p>
+        </div>
+    </div>
+
+    <div id="taunt-screen" class="hidden text-center p-8 bg-black h-screen w-screen flex flex-col items-center justify-center text-white">
+        <p class="text-xl md:text-3xl pop-font text-green-300 mb-4">こんな簡単なのに引っかかるなんて～www</p>
+        <p class="text-xl md:text-3xl pop-font text-blue-300 mb-8">怪しいURLは開いちゃダメって教えてもらわなかったのかな～www</p>
+        <h1 class="text-3xl md:text-5xl pop-font text-yellow-300 mb-6 animate-pulse">いつまで学生気分なんですか～？wwwww</h1>
+        <h2 class="text-2xl md:text-4xl pop-font text-red-500 mb-8">そんなんで社会人やっていけんのか？</h2>
+        <p class="text-4xl md:text-6xl pop-font text-purple-400 italic" style="text-shadow: 2px 2px 8px #E91E63;">わたし、気になります！</p>
+    </div>
+
+    <div id="final-screen" class="hidden text-center p-4 md:p-8 bg-gradient-to-br from-purple-200 via-pink-200 to-red-200 h-screen w-screen flex flex-col items-center justify-center opacity-0">
+        <div id="confetti-container"></div>
+        <div class="bg-white/80 p-6 md:p-10 rounded-3xl shadow-2xl backdrop-blur-md max-w-4xl w-full">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">...なーんてのは、もちろん冗談！</h1>
+            <h2 class="text-4xl md:text-6xl font-bold text-pink-500 mb-6 pop-font">改めて、誕生日おめでとう！</h2>
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <img id="birthday-image" src="https://i.imgur.com/6oNcG3Y.jpeg" alt="バースデーケーキを持ったアニメキャラクター" class="w-48 h-auto md:w-64 rounded-xl shadow-lg mx-auto">
+                <div class="text-left flex-1">
+                    <p class="text-base md:text-lg text-gray-700 leading-relaxed">
+                        お誕生日おめでとう、これをやろう。<br>
+                        各国の法律についてまとめた資料だ、<br>
+                        お前はこれから色々なところを旅するつもりなんだろう？<br>
+                        事前に他国の法律を知っていれば、何かと助けになるはずだ。<br>
+                        あぁ、いや、だからといって、そうすぐに覚える必要はないぞ。<br>
+                        そんなことしたら…私が…お前の役に立てなくなるではないか。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        const startScreen = document.getElementById('start-screen');
+        const errorScreen = document.getElementById('error-screen');
+        const tauntScreen = document.getElementById('taunt-screen');
+        const finalScreen = document.getElementById('final-screen');
+        const presentButton = document.getElementById('present-button');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const confettiContainer = document.getElementById('confetti-container');
+
+        // --- Button Click Event ---
+        presentButton.addEventListener('click', async () => {
+            // 音声の初期化を試みますが、失敗しても処理を止めません。
+            try {
+                if (typeof Tone !== 'undefined' && Tone.context.state !== 'running') {
+                    await Tone.start();
+                }
+            } catch (e) {
+                console.error("音声の再生を開始できませんでした。音声なしで続行します。", e);
+            }
+
+            // --- 画面切り替え（ここからは必ず実行されます） ---
+            startScreen.classList.add('hidden');
+            errorScreen.classList.remove('hidden');
+            
+            // --- 音声再生（再生できる場合のみ） ---
+            let synth, seq;
+            try {
+                if (typeof Tone !== 'undefined' && Tone.context.state === 'running') {
+                    synth = new Tone.Synth({
+                        oscillator: { type: 'square' },
+                        envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.1 }
+                    }).toDestination();
+                    Tone.Transport.bpm.value = 180;
+                    seq = new Tone.Sequence((time, note) => {
+                        synth.triggerAttackRelease(note, '16n', time);
+                    }, ['C4', 'G3', 'C4', 'G3'], '8n').start(0);
+                    Tone.Transport.start();
+                }
+            } catch (e) {
+                console.error("エラー画面の音の再生に失敗しました:", e);
+            }
+
+            // プログレスバーを進める
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 5;
+                if (progress > 100) progress = 100;
+                progressBar.style.width = `${progress}%`;
+                progressText.textContent = `${Math.floor(progress)}% COMPLETE`;
+                if (progress === 100) {
+                    clearInterval(interval);
+                }
+            }, 200);
+
+            // 6秒後に煽り画面へ
+            setTimeout(() => {
+                // 音声の停止（再生されていた場合のみ）
+                try {
+                    if (typeof Tone !== 'undefined' && Tone.Transport.state === 'started') {
+                        Tone.Transport.stop();
+                        if(seq) seq.dispose();
+                        if(synth) synth.dispose();
+                    }
+                } catch (e) {
+                    console.error("エラー画面の音の停止に失敗しました:", e);
+                }
+                
+                // 画面切り替え
+                errorScreen.classList.add('hidden');
+                tauntScreen.classList.remove('hidden');
+
+                // 煽りサウンド（再生できる場合のみ）
+                try {
+                    if (typeof Tone !== 'undefined' && Tone.context.state === 'running') {
+                        const tauntSynth = new Tone.FMSynth().toDestination();
+                        tauntSynth.triggerAttackRelease("C#2", "2n", Tone.now());
+                        setTimeout(() => tauntSynth.dispose(), 2000); 
+                    }
+                } catch (e) {
+                    console.error("煽りサウンドの再生に失敗しました:", e);
+                }
+
+                // 7秒後に最終画面へ
+                setTimeout(() => {
+                    tauntScreen.classList.add('hidden');
+                    finalScreen.classList.remove('hidden');
+                    finalScreen.classList.add('fade-in');
+                    
+                    // お祝いの音（再生できる場合のみ）
+                    try {
+                        if (typeof Tone !== 'undefined' && Tone.context.state === 'running') {
+                            const polySynth = new Tone.PolySynth(Tone.Synth).toDestination();
+                            const now = Tone.now();
+                            polySynth.triggerAttackRelease(['C4', 'E4', 'G4'], '8n', now);
+                            polySynth.triggerAttackRelease(['G4', 'B4', 'D5'], '8n', now + 0.2);
+                            polySynth.triggerAttackRelease(['C5', 'E5', 'G5'], '4n', now + 0.4);
+                            setTimeout(() => polySynth.dispose(), 1000); 
+                        }
+                    } catch (e) {
+                        console.error("お祝いサウンドの再生に失敗しました:", e);
+                    }
+
+                    createConfetti();
+                }, 7000);
+
+            }, 6000);
+        });
+
+        // --- Confetti Function ---
+        function createConfetti() {
+            const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800'];
+            for (let i = 0; i < 200; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = `${Math.random() * 5}s`;
+                confetti.style.animationDuration = `${4 + Math.random() * 5}s`;
+                confetti.style.transform = `scale(${0.7 + Math.random()})`;
+                confettiContainer.appendChild(confetti);
+            }
+        }
+    </script>
+</body>
+</html>
